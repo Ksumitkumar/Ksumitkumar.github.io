@@ -2,17 +2,29 @@
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 const navLinks = document.querySelectorAll('.nav-link');
+const navbar = document.querySelector('.navbar');
 
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-    hamburger.classList.toggle('active');
-});
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        hamburger.classList.toggle('active');
+    });
+}
 
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
         navMenu.classList.remove('active');
         hamburger.classList.remove('active');
     });
+});
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
 });
 
 // Active nav link on scroll
@@ -51,6 +63,26 @@ navLinks.forEach(link => {
     });
 });
 
+// Back to top button
+const backToTopBtn = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) {
+        backToTopBtn.classList.add('show');
+    } else {
+        backToTopBtn.classList.remove('show');
+    }
+});
+
+if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
 // Form submission
 const contactForm = document.getElementById('contactForm');
 
@@ -58,30 +90,23 @@ if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        // Get form values
-        const formData = new FormData(contactForm);
         const name = contactForm.querySelector('input[type="text"]').value;
         const email = contactForm.querySelector('input[type="email"]').value;
+        const subject = contactForm.querySelectorAll('input[type="text"]')[1]?.value || 'Portfolio Inquiry';
         const message = contactForm.querySelector('textarea').value;
         
-        // Simple validation
         if (name.trim() === '' || email.trim() === '' || message.trim() === '') {
             alert('Please fill in all fields');
             return;
         }
         
-        // Create mailto link
-        const mailtoLink = `mailto:sumitkmr1908@gmail.com?subject=Message from ${name}&body=${encodeURIComponent(message)}%0A%0AFrom: ${name}%0AEmail: ${email}`;
-        
-        // Open mail client
+        const mailtoLink = `mailto:sumitkmr1908@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
         window.location.href = mailtoLink;
-        
-        // Reset form
         contactForm.reset();
     });
 }
 
-// Scroll animations
+// Intersection Observer for animations
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -100px 0px'
@@ -96,15 +121,14 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Add animation to project cards and skill items
-const cards = document.querySelectorAll('.project-card, .skill-category, .timeline-content');
+const cards = document.querySelectorAll('.project-card, .skill-category, .timeline-content, .education-card, .stat-card');
 cards.forEach((card, index) => {
     card.style.opacity = '0';
     card.style.animationDelay = `${index * 0.1}s`;
     observer.observe(card);
 });
 
-// Add CSS animations
+// Add animation styles
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeInUp {
@@ -117,41 +141,11 @@ style.textContent = `
             transform: translateY(0);
         }
     }
-
-    @keyframes slideInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
 `;
 document.head.appendChild(style);
 
-// Typing effect for hero subtitle
-const heroSubtitle = document.querySelector('.hero-subtitle');
-if (heroSubtitle) {
-    const text = heroSubtitle.textContent;
-    heroSubtitle.textContent = '';
-    let index = 0;
-
-    const typeWriter = () => {
-        if (index < text.length) {
-            heroSubtitle.textContent += text.charAt(index);
-            index++;
-            setTimeout(typeWriter, 100);
-        }
-    };
-
-    // Start typing after a short delay
-    setTimeout(typeWriter, 500);
-}
-
 // Counter animation for stats
-const stats = document.querySelectorAll('.stat h3');
+const stats = document.querySelectorAll('.stat-card h3');
 const counterOptions = {
     threshold: 0.5
 };
@@ -167,7 +161,7 @@ const counterObserver = new IntersectionObserver((entries) => {
             const counter = setInterval(() => {
                 currentValue += increment;
                 if (currentValue >= endValue) {
-                    target.textContent = target.textContent;
+                    target.textContent = endValue + '+';
                     clearInterval(counter);
                 } else {
                     target.textContent = Math.floor(currentValue) + '+';
@@ -183,4 +177,4 @@ stats.forEach(stat => {
     counterObserver.observe(stat);
 });
 
-console.log('Portfolio website loaded successfully!');
+console.log('%cPortfolio Loaded Successfully!', 'color: #1F3A93; font-size: 16px; font-weight: bold;');
